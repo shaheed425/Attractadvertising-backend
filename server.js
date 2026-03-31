@@ -23,31 +23,29 @@ connectDB();
 const app = express();
 
 // CORS Configuration
-// const allowedOrigins = [
-//   'http://localhost:5173',
-//   'http://localhost:5175',
-//   'http://localhost:5176',
-//   'http://localhost:5177',
-//   process.env.FRONTEND_URL
-// ].filter(Boolean);
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:5175',
+  'http://localhost:5176',
+  'http://localhost:5177',
+  process.env.FRONTEND_URL
+].filter(Boolean);
 
-// app.use(cors({
-//   origin: function (origin, callback) {
-//     // Allow requests with no origin (like mobile apps or curl) 
-//     // or any localhost origin
-//     if (!origin || /^http:\/\/localhost:\d+$/.test(origin) || origin === process.env.FRONTEND_URL) {
-//       callback(null, true);
-//     } else {
-//       console.log('CORS Blocked for origin:', origin);
-//       callback(new Error('Not allowed by CORS'));
-//     }
-//   },
-//   credentials: true,
-//   methods: ['GET', 'POST', 'PUT', 'DELETE'],
-//   allowedHeaders: ['Content-Type', 'Authorization']
-// }));
-
-app.use(cors());
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl) 
+    // or any localhost origin
+    if (!origin || /^http:\/\/localhost:\d+$/.test(origin) || origin === process.env.FRONTEND_URL) {
+      callback(null, true);
+    } else {
+      console.log('CORS Blocked for origin:', origin);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 app.use(express.json());
 
