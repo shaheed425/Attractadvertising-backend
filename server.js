@@ -47,29 +47,30 @@ const app = express();
 //   allowedHeaders: ['Content-Type', 'Authorization']
 // }));
 
-app.use(express.json());
-
 const allowedOrigins = [
-  'http://localhost:5173',
-  'http://localhost:5175',
-  'http://localhost:5176',
-  'http://localhost:5177',
-  'https://attractadvertising.in'
+  "https://www.cart7online.com",
+  "https://admin.cart7online.com",
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "http://localhost:5175",
 ];
+
+
 
 app.use(cors({
   origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl)
     if (!origin) return callback(null, true);
-
     if (allowedOrigins.includes(origin)) {
-      callback(null, true);
+      return callback(null, true);
     } else {
-      console.log("Blocked by CORS:", origin);
-      callback(new Error("Not allowed by CORS"));
+      return callback(new Error("Not allowed by CORS"));
     }
   },
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   credentials: true,
 }));
+app.use(express.json());
 
 // Static file serving for uploads
 const __dirname = path.resolve();
