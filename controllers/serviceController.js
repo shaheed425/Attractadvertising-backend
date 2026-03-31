@@ -1,4 +1,5 @@
 import Service from '../models/Service.js';
+import { deleteFromCloudinary } from '../middleware/deleteFromCloudinary.js';
 
 // @desc    Get all services
 // @route   GET /api/services
@@ -70,6 +71,10 @@ export const deleteService = async (req, res) => {
       const service = await Service.findById(req.params.id);
   
       if (service) {
+        // Delete image from Cloudinary if it exists
+        if (service.icon) {
+          await deleteFromCloudinary(service.icon);
+        }
         await service.deleteOne();
         res.json({ message: 'Service removed' });
       } else {

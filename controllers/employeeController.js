@@ -1,4 +1,5 @@
 import Employee from '../models/Employee.js';
+import { deleteFromCloudinary } from '../middleware/deleteFromCloudinary.js';
 
 // @desc    Get all employees
 // @route   GET /api/employees
@@ -71,6 +72,9 @@ export const deleteEmployee = async (req, res) => {
     const employee = await Employee.findById(req.params.id);
 
     if (employee) {
+      if (employee.image) {
+        await deleteFromCloudinary(employee.image);
+      }
       await employee.deleteOne();
       res.json({ message: 'Employee removed' });
     } else {

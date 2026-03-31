@@ -1,4 +1,5 @@
 import Portfolio from '../models/Portfolio.js';
+import { deleteFromCloudinary } from '../middleware/deleteFromCloudinary.js';
 
 // @desc    Get all portfolio items
 // @route   GET /api/portfolio
@@ -98,6 +99,9 @@ export const deletePortfolio = async (req, res) => {
     const portfolio = await Portfolio.findById(req.params.id);
 
     if (portfolio) {
+      if (portfolio.media) {
+        await deleteFromCloudinary(portfolio.media);
+      }
       await portfolio.deleteOne();
       res.json({ message: 'Portfolio item removed' });
     } else {

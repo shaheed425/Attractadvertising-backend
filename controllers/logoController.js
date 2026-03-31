@@ -1,4 +1,5 @@
 import Logo from '../models/Logo.js';
+import { deleteFromCloudinary } from '../middleware/deleteFromCloudinary.js';
 
 // @desc    Get all logos (clients)
 // @route   GET /api/logos
@@ -50,6 +51,9 @@ export const deleteLogo = async (req, res) => {
       const logo = await Logo.findById(req.params.id);
   
       if (logo) {
+        if (logo.logo) {
+          await deleteFromCloudinary(logo.logo);
+        }
         await logo.deleteOne();
         res.json({ message: 'Logo removed' });
       } else {
