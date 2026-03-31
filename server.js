@@ -22,25 +22,20 @@ connectDB();
 
 const app = express();
 
-// // CORS Configuration
+// CORS Configuration
 // const allowedOrigins = [
 //   'http://localhost:5173',
 //   'http://localhost:5175',
 //   'http://localhost:5176',
 //   'http://localhost:5177',
-//   'https://attractadvertising.in',
 //   process.env.FRONTEND_URL
 // ].filter(Boolean);
 
 // app.use(cors({
 //   origin: function (origin, callback) {
 //     // Allow requests with no origin (like mobile apps or curl) 
-//     // or any localhost origin, or any origin in our allowed list
-//     if (
-//       !origin || 
-//       /^http:\/\/localhost:\d+$/.test(origin) || 
-//       allowedOrigins.includes(origin)
-//     ) {
+//     // or any localhost origin
+//     if (!origin || /^http:\/\/localhost:\d+$/.test(origin) || origin === process.env.FRONTEND_URL) {
 //       callback(null, true);
 //     } else {
 //       console.log('CORS Blocked for origin:', origin);
@@ -52,35 +47,7 @@ const app = express();
 //   allowedHeaders: ['Content-Type', 'Authorization']
 // }));
 
-// import cors from "cors";
-
-const allowedOrigins = [
-  'http://localhost:5173',
-  'http://localhost:5175',
-  'http://localhost:5176',
-  'http://localhost:5177',
-  'https://attractadvertising.in',
-  process.env.FRONTEND_URL
-].filter(Boolean);
-
-app.use(cors({
-  origin: function (origin, callback) {
-    if (
-      !origin ||
-      /^http:\/\/localhost:\d+$/.test(origin) ||
-      allowedOrigins.includes(origin)
-    ) {
-      callback(null, true);
-    } else {
-      console.log('CORS Blocked:', origin);
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
-}));
-
-// ✅ THIS LINE IS THE FIX
-app.options('*', cors());
+app.use(cors());
 
 app.use(express.json());
 
