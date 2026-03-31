@@ -48,8 +48,7 @@ const app = express();
 // }));
 
 const allowedOrigins = [
-  "https://www.cart7online.com",
-  "https://admin.cart7online.com",
+  "https://attractadvertising.in",
   "http://localhost:5173",
   "http://localhost:5174",
   "http://localhost:5175",
