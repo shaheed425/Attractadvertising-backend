@@ -20,13 +20,16 @@ export const getEmployees = async (req, res) => {
   }
 };
 
-// @desc    Create an employee
+// @desc    Create an employee (Singleton: Replaces existing)
 // @route   POST /api/employees
 // @access  Private/Admin
 export const createEmployee = async (req, res) => {
   const { name, role, image, imageUrl } = req.body;
 
   try {
+    // Delete all existing employees to ensure only one exists (Founder singleton)
+    await Employee.deleteMany({});
+
     const employee = new Employee({
       name,
       role,
