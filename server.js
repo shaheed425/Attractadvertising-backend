@@ -16,6 +16,9 @@ import serviceRoutes from './routes/serviceRoutes.js';
 import logoRoutes from './routes/logoRoutes.js';
 import uploadRoutes from './routes/uploadRoutes.js';
 import contactRoutes from './routes/contactRoutes.js';
+import scheduleRoutes from './routes/scheduleRoutes.js';
+import settingsRoutes from './routes/settingsRoutes.js';
+import testimonialRoutes from './routes/testimonialRoutes.js';
 
 // Connect to Database
 connectDB();
@@ -54,16 +57,17 @@ const allowedOrigins = [
   "http://localhost:5175",
 ];
 
-
-
 app.use(cors({
   origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl)
     if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) {
+    if (
+      allowedOrigins.includes(origin) ||
+      origin.endsWith('.vercel.app') ||
+      origin.includes('localhost')
+    ) {
       return callback(null, true);
     } else {
-      return callback(new Error("Not allowed by CORS"));
+      return callback(null, true); // Permissive fallback
     }
   },
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
@@ -85,6 +89,9 @@ app.use('/api/services', serviceRoutes);
 app.use('/api/logos', logoRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/contacts', contactRoutes);
+app.use('/api/schedule', scheduleRoutes);
+app.use('/api/settings', settingsRoutes);
+app.use('/api/testimonials', testimonialRoutes);
 
 app.get('/', (req, res) => {
   res.send('Portfolio Backend API: RUNNING');
@@ -99,3 +106,5 @@ const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {
   console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
 });
+
+export default app;
