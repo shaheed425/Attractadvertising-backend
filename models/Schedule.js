@@ -58,16 +58,35 @@ const scheduleSchema = mongoose.Schema(
     totalAmount: {
       type: Number,
       required: true,
-      default: 4999,
+      default: 4000,
+    },
+    originalAmount: {
+      type: Number,
+      default: 4000,
+    },
+    couponCode: {
+      type: String,
+      default: '',
+    },
+    discountPercentage: {
+      type: Number,
+      default: 0,
+    },
+    discountAmount: {
+      type: Number,
+      default: 0,
+    },
+    finalAmount: {
+      type: Number,
+      default: 4000,
     },
     paymentScreenshot: {
       type: String,
-      required: true,
+      default: '',
     },
     paymentStatus: {
       type: String,
-      enum: ['Pending Verification', 'Verified', 'Rejected'],
-      default: 'Pending Verification',
+      default: 'Pending Confirmation',
     },
   },
   {

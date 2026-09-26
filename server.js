@@ -19,6 +19,7 @@ import contactRoutes from './routes/contactRoutes.js';
 import scheduleRoutes from './routes/scheduleRoutes.js';
 import settingsRoutes from './routes/settingsRoutes.js';
 import testimonialRoutes from './routes/testimonialRoutes.js';
+import couponRoutes from './routes/couponRoutes.js';
 
 // Connect to Database
 connectDB();
@@ -50,29 +51,26 @@ const app = express();
 //   allowedHeaders: ['Content-Type', 'Authorization']
 // }));
 
-const allowedOrigins = [
-  "https://attractadvertising.in",
-  "http://localhost:5173",
-  "http://localhost:5174",
-  "http://localhost:5175",
-];
+// Comprehensive CORS Middleware supporting all origins & Vercel edge caching
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  // Dynamic origin or wildcard for dev & prod
+  if (origin) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  } else {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+  }
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin, Access-Control-Request-Method, Access-Control-Request-Headers');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Vary', 'Origin');
 
-app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin) return callback(null, true);
-    if (
-      allowedOrigins.includes(origin) ||
-      origin.endsWith('.vercel.app') ||
-      origin.includes('localhost')
-    ) {
-      return callback(null, true);
-    } else {
-      return callback(null, true); // Permissive fallback
-    }
-  },
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  credentials: true,
-}));
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+  next();
+});
+
 app.use(express.json());
 
 // Static file serving for uploads
@@ -92,6 +90,7 @@ app.use('/api/contacts', contactRoutes);
 app.use('/api/schedule', scheduleRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/testimonials', testimonialRoutes);
+app.use('/api/coupons', couponRoutes);
 
 app.get('/', (req, res) => {
   res.send('Portfolio Backend API: RUNNING');

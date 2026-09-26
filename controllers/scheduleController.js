@@ -1,4 +1,5 @@
 import Schedule from '../models/Schedule.js';
+import Coupon from '../models/Coupon.js';
 
 // @desc    Create a new scheduled booking
 // @route   POST /api/schedule
@@ -19,14 +20,52 @@ export const createScheduleBooking = async (req, res) => {
       place,
       timeSlot,
       totalAmount,
+      originalAmount,
+      couponCode,
       paymentScreenshot,
     } = req.body;
 
-    if (!customerName || !phoneNumber || !email || !date || !district || !place || !timeSlot || !paymentScreenshot) {
-      return res.status(400).json({ message: 'Please provide all required fields including the payment screenshot.' });
+    if (!customerName || !phoneNumber || !email || !date || !district || !place || !timeSlot) {
+      return res.status(400).json({ message: 'Please provide all required fields (Name, Phone, Email, Date, Location, Time Slot).' });
     }
 
     const bookingId = `ATT-SCH-${Math.floor(100000 + Math.random() * 900000)}`;
+
+    let baseAmount = Number(originalAmount) || Number(totalAmount) || 4000;
+    let appliedCouponCode = '';
+    let appliedDiscountPct = 0;
+    let appliedDiscountAmt = 0;
+    let finalPayableAmount = baseAmount;
+
+    // Server-side Coupon Validation
+    if (couponCode && typeof couponCode === 'string' && couponCode.trim()) {
+      const cleanCode = couponCode.trim().toUpperCase();
+      const dbCoupon = await Coupon.findOne({ code: cleanCode });
+
+      if (dbCoupon && dbCoupon.status === 'Active') {
+        const now = new Date();
+        const startValid = now >= new Date(dbCoupon.startDate);
+        const expiryValid = now <= new Date(dbCoupon.expiryDate);
+        const minAmountValid = dbCoupon.minimumBookingAmount === 0 || baseAmount >= dbCoupon.minimumBookingAmount;
+        const usageLimitValid = dbCoupon.usageLimit === 0 || dbCoupon.usageCount < dbCoupon.usageLimit;
+
+        if (startValid && expiryValid && minAmountValid && usageLimitValid) {
+          appliedCouponCode = dbCoupon.code;
+          appliedDiscountPct = dbCoupon.discountPercentage;
+          let calculatedDiscount = Math.round((baseAmount * dbCoupon.discountPercentage) / 100);
+
+          if (dbCoupon.maximumDiscount > 0 && calculatedDiscount > dbCoupon.maximumDiscount) {
+            calculatedDiscount = dbCoupon.maximumDiscount;
+          }
+
+          appliedDiscountAmt = calculatedDiscount;
+          finalPayableAmount = Math.max(0, baseAmount - appliedDiscountAmt);
+
+          // Atomic increment of coupon usage count
+          await Coupon.findByIdAndUpdate(dbCoupon._id, { $inc: { usageCount: 1 } });
+        }
+      }
+    }
 
     const booking = new Schedule({
       bookingId,
@@ -42,8 +81,14 @@ export const createScheduleBooking = async (req, res) => {
       district,
       place,
       timeSlot,
-      totalAmount: totalAmount || 4999,
-      paymentScreenshot,
+      totalAmount: finalPayableAmount,
+      originalAmount: baseAmount,
+      couponCode: appliedCouponCode,
+      discountPercentage: appliedDiscountPct,
+      discountAmount: appliedDiscountAmt,
+      finalAmount: finalPayableAmount,
+      paymentScreenshot: paymentScreenshot || '',
+      paymentStatus: 'Pending Confirmation',
     });
 
     const createdBooking = await booking.save();
