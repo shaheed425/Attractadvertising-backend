@@ -56,10 +56,10 @@ export const getSettings = async (req, res) => {
     let settings = await Settings.findOne();
     if (!settings) {
       settings = await Settings.create({
-        upiId: '8590204464@ybl',
+        upiId: '7034204464@ybl',
         ownerName: 'ATTRACT ADVERTISING',
         qrImage: '',
-        instagramUrl: 'https://www.instagram.com/Stackxxio_/',
+        instagramUrl: 'https://www.instagram.com/zynexta_/',
         timeSlots: DEFAULT_TIME_SLOTS,
       });
     }
@@ -80,10 +80,10 @@ export const updateSettings = async (req, res) => {
 
     if (!settings) {
       settings = new Settings({
-        upiId: upiId || '8590204464@ybl',
+        upiId: upiId || '7034204464@ybl',
         ownerName: ownerName || 'ATTRACT ADVERTISING',
         qrImage: qrImage || '',
-        instagramUrl: instagramUrl || 'https://www.instagram.com/Stackxxio_/',
+        instagramUrl: instagramUrl || 'https://www.instagram.com/zynexta_/',
         heroShowcaseImage: heroShowcaseImage || '',
         timeSlots: timeSlots || DEFAULT_TIME_SLOTS,
       });

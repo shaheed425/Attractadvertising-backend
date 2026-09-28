@@ -15,7 +15,7 @@ const settingsSchema = mongoose.Schema(
     upiId: {
       type: String,
       required: true,
-      default: '8590204464@ybl',
+      default: '7034204464@ybl',
     },
     ownerName: {
       type: String,
@@ -28,7 +28,7 @@ const settingsSchema = mongoose.Schema(
     },
     instagramUrl: {
       type: String,
-      default: 'https://www.instagram.com/Stackxxio_/',
+      default: 'https://www.instagram.com/zynexta_/',
     },
     heroShowcaseImage: {
       type: String,
